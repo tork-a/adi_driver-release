@@ -30,6 +30,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "ros/ros.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,6 +51,17 @@ int16_t big_endian_to_short(unsigned char *data)
 {
   unsigned char buff[2] = {data[1], data[0]};
   return *reinterpret_cast<int16_t*>(buff);
+}
+
+/**
+ * @brief change big endian 2 byte into short
+ * @param data Head pointer to the data
+ * @retrun converted value
+ */
+void short_to_big_endian(unsigned char *buff, int16_t data)
+{
+  buff[0] = data >> 8;
+  buff[1] = data & 0x00ff;
 }
 
 /**
@@ -219,6 +231,51 @@ int Adis16470::read_register(char address, int16_t& data)
 }
 
 /**
+ * @brief Write data to the register
+ * @param address Register address
+ * @retval 0 Success
+ * @retval -1 Failed
+ * 
+ * - Adress is the first byte of actual address.
+ * - Specify data at the adress.
+ */
+int Adis16470::write_register(char address, int16_t data)
+{
+  unsigned char buff[5] = {0x61, 0x00, 0x00, 0x00, 0x00};
+  // Set R~/W bit 1
+  buff[1] = address | 0x80;
+  buff[3] = (address + 1) | 0x80;
+  // Set data
+  buff[2] = data & 0xff;
+  buff[4] = data >> 8;
+
+  int size = write(fd_, buff, sizeof(buff));
+  if (size != sizeof(buff))
+  {
+    perror("write_register");
+    return -1;
+  }
+  if (tcdrain(fd_) < 0)
+  {
+    perror("write_register");
+    return -1;
+  }
+  unsigned char recv_buff[5] = {0, 0, 0, 0, 0};
+  size = read(fd_, recv_buff, sizeof(recv_buff));
+  if (size != sizeof(recv_buff))
+  {
+    perror("write_register");
+    return -1;
+  }
+  if (recv_buff[0] != 0xff)
+  {
+    perror("write_register: ACK error");
+    return -1;
+  }
+  return 0;
+}
+
+/**
  * @brief Update all information by bust read
  * @retval 0 Success
  * @retval -1 Failed
@@ -268,7 +325,8 @@ int Adis16470::update_burst(void)
   accl[1] = big_endian_to_short(&buff[13]) * M_PI / 180 / 10.0;
   // Z_ACCL_OUT
   accl[2] = big_endian_to_short(&buff[15]) * M_PI / 180 / 10.0;
-
+  // TEMP_OUT
+  temp = big_endian_to_short(&buff[16]) * 0.1;
   return 0;
 }
 
@@ -277,7 +335,7 @@ int Adis16470::update_burst(void)
  */
 int Adis16470::update(void)
 {
-  int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3];
+  int16_t gyro_out[3], gyro_low[3], accl_out[3], accl_low[3], temp_out;
 
   read_register(0x04, gyro_low[0]);
   read_register(0x06, gyro_low[0]);
@@ -291,8 +349,12 @@ int Adis16470::update(void)
   read_register(0x16, accl_low[1]);
   read_register(0x18, accl_out[1]);
   read_register(0x1a, accl_low[2]);
-  read_register(0x00, accl_out[2]);
+  read_register(0x1c, accl_out[2]);
+  read_register(0x00, temp_out);
 
+  // temperature convert
+  temp = temp_out * 0.1;
+  
   // 32bit convert
   for (int i=0; i < 3; i++)
   {
@@ -301,3 +363,33 @@ int Adis16470::update(void)
   }
   return 0;
 }
+
+/**
+ * @brief set bias estimating time (GLOB_CMD)
+ * @retval 0 Success
+ * @retval -1 Failed
+ */
+int Adis16470::set_bias_estimation_time(int16_t tbc)
+{
+  write_register(0x66, tbc);
+  tbc = 0;
+  int16_t dummy = 0;
+  read_register(0x66, dummy);
+  read_register(0x00, tbc);
+  ROS_INFO("TBC: %04x", tbc);
+  return 0;
+}
+
+/**
+ * @brief Bias correction update (GLOB_CMD)
+ * @retval 0 Success
+ * @retval -1 Failed
+ */
+int Adis16470::bias_correction_update(void)
+{
+  // Bit0: Bias correction update
+  int16_t data = 1;
+  write_register(0x68, data);
+}
+
+
