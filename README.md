@@ -1,3 +1,26 @@
+## adi_driver (kinetic) - 1.0.3-0
+
+The packages in the `adi_driver` repository were released into the `kinetic` distro by running `/home/tajima/.local/bin/bloom-release --rosdistro kinetic --track kinetic adi_driver` on `Mon, 12 Nov 2018 13:45:11 -0000`
+
+The `adi_driver` package was released.
+
+Version of package(s) in repository `adi_driver`:
+
+- upstream repository: https://github.com/tork-a/adi_driver.git
+- release repository: https://github.com/tork-a/adi_driver-release.git
+- rosdistro version: `1.0.2-0`
+- old version: `1.0.2-0`
+- new version: `1.0.3-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.8`
+- catkin_pkg version: `0.4.9`
+- rosdep version: `0.13.0`
+- rosdistro version: `0.7.0`
+- vcstools version: `0.1.40`
+
+
 ## adi_driver (indigo) - 1.0.3-0
 
 The packages in the `adi_driver` repository were released into the `indigo` distro by running `/home/tajima/.local/bin/bloom-release --rosdistro indigo --track indigo adi_driver` on `Mon, 12 Nov 2018 13:38:10 -0000`
