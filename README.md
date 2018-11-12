@@ -1,3 +1,26 @@
+## adi_driver (melodic) - 1.0.3-0
+
+The packages in the `adi_driver` repository were released into the `melodic` distro by running `/home/tajima/.local/bin/bloom-release --rosdistro melodic --track melodic adi_driver --edit` on `Mon, 12 Nov 2018 13:30:58 -0000`
+
+The `adi_driver` package was released.
+
+Version of package(s) in repository `adi_driver`:
+
+- upstream repository: https://github.com/tork-a/adi_driver.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `1.0.3-0`
+
+Versions of tools used:
+
+- bloom version: `0.6.8`
+- catkin_pkg version: `0.4.9`
+- rosdep version: `0.13.0`
+- rosdistro version: `0.7.0`
+- vcstools version: `0.1.40`
+
+
 ## adi_driver (indigo) - 1.0.2-0
 
 The packages in the `adi_driver` repository were released into the `indigo` distro by running `/usr/bin/bloom-release adi_driver --track indigo --rosdistro indigo` on `Fri, 17 Aug 2018 11:54:58 -0000`
