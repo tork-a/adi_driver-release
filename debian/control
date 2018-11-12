@@ -1,0 +1,12 @@
+Source: ros-melodic-adi-driver
+Section: misc
+Priority: extra
+Maintainer: Tokyo Opensource Robotics Kyokai (TORK) Developer Team <dev@opensource-robotics.tokyo.jp>
+Build-Depends: debhelper (>= 9.0.0), ros-melodic-catkin, ros-melodic-roscpp, ros-melodic-roslaunch, ros-melodic-roslint, ros-melodic-rostest, ros-melodic-sensor-msgs, ros-melodic-std-srvs
+Homepage: http://wiki.ros.org/adi_driver
+Standards-Version: 3.9.2
+
+Package: ros-melodic-adi-driver
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-melodic-imu-filter-madgwick, ros-melodic-roscpp, ros-melodic-rqt-plot, ros-melodic-rviz, ros-melodic-rviz-imu-plugin, ros-melodic-sensor-msgs, ros-melodic-std-srvs, ros-melodic-xacro
+Description: The adi_driver package
